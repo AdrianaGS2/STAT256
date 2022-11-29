@@ -1,0 +1,75 @@
+---
+title: "FinalProjectProgram"
+output: html_document
+date: '2022-11-29'
+---
+
+```{r}
+
+Teams <- function(){
+  Data <- read.table("Data.csv", header = T, sep = ",")
+  TeamData <- read.table("TeamData.csv", header = T, sep = ",")
+  linearregression <- lm(Data$Current.FIFA.Rank ~ 
+                       Data$FIFA.2014.Rank + as.numeric(Data$History.with.Opponent.W.L) +
+                      as.numeric(Data$History.with.Opponent.Goals),
+                      data = Data)
+  summary(linearregression)
+  cat("Here is a list of the 32 teams that played the 2018 FIFA World Cup, pick two teams from the same group,and I will tell you who wins. To know which team was in each group, refer to the user guide. 
+      ")
+  print(TeamData$Team)
+  marker1 <- 0
+  marker2 <- 0
+  while(marker1 == 0)
+    { 
+       First_Team <- readline(prompt = "Please enter the first team: ")
+       for(i in 1:length(Data$Team))
+        {
+         if (First_Team == Data$Team[i]) marker1 = 1
+        }
+       if (marker1==0) print("Sorry I could not find that team. Please enter it again.")
+    }
+  while(marker2 == 0)
+    { 
+      Second_Team <- readline(prompt = "Please enter the second team: ") 
+      for(i in 1:length(Data$Team))
+       {
+        if (Second_Team == Data$Team[i]) marker2 = 1
+       }
+      if(Second_Team == First_Team) marker2 = 3
+       if(marker2 == 3) print("This team is the same team as the first one. Please re-enter it.")
+       if (marker2 == 0) print("Sorry I could not find that team. Please enter it again.")
+      if(Second_Team==First_Team) marker2 = 0
+         }
+  cat("Are these the two teams you selected?:", First_Team, "and", Second_Team,".")
+  Confirmation <- readline(prompt = "Enter answer: ")
+  if (Confirmation == "Yes") 
+    {
+    for (i in 1:length(Data$Team)) 
+      {
+    for (j in 1:length(Data$Against)) 
+      {
+     if ((First_Team == Data$Team[i]) && (Second_Team == Data$Against[j]))
+         {var1 = linearregression$fitted.values[i]
+         }
+  }
+    for (i in 1:length(Data$Team)) {
+    for (j in 1:length(Data$Against)) {
+    if ((Second_Team) == Data$Team[i] & (First_Team) == Data$Against[j])
+    {var2 = linearregression$fitted.values[i]}}
+  }
+    }
+    if (var1 > var2) var3 = First_Team 
+    else if (var1 < var2) var3 = Second_Team
+    else var3 = "tie"
+    return(cat("The winner is",var3,"."))
+    }
+ else {return(Teams())}
+}
+
+```
+
+```{r}
+
+Teams()
+
+```
